@@ -1,0 +1,40 @@
+table#map {
+  td {
+    width: 20px;
+    height: 20px;
+    background-color: brown;
+    text-align: center;
+    position: relative;
+    
+    &:after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      text-align: center;
+    }
+    &[data-density="0"]:after {
+      content: "0";
+    }
+    &[data-density="1"]:after {
+      content: "1";
+    }
+    &[data-density="2"]:after {
+      content: "2";
+    }
+    
+    &[data-zone="residential"] {
+      background-color: green;
+    }
+    &[data-zone="commercial"] {
+      background-color: blue;
+    }
+    &[data-zone="industrial"] {
+      background-color: yellow;
+    }
+    &[data-zone="road"] {
+      background-color: gray;
+    }
+
+  }
+}
