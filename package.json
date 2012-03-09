@@ -1,0 +1,10 @@
+{
+  "name": "squaresville",
+  "version": "0.0.1",
+  "dependencies": {
+  	"yamlish": ">= 0.0.2",
+    "express": ">= 2.4.3",
+  	"jade": ">= 0.0.1",
+  	"socket.io": ">= 0.0.1"
+  }
+}

@@ -1,0 +1,38 @@
+!!! 5
+html(class='no-js', lang='en')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+
+    title= title
+    meta(name='description', content='')
+    meta(name='author', content='')
+
+    meta(name='viewport', content='width=device-width,initial-scale=1')
+
+    link(rel='stylesheet', href='css/style.css')
+
+    #container
+      header
+      #main(role='main')
+        table#map
+          - for (var y = 0; y < map.mapsize; y++)
+            tr
+              - for (var x = 0; x < map.mapsize; x++)
+                - var squareId = 'square-'+x+'x'+y
+                td(id = squareId)
+        dl#stats
+          dt Population
+          dd#population 0
+          
+          dt Residential Capacity
+          dd#residentialCap 0
+          
+        
+      footer
+
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.6.3/jquery.min.js')
+    script window.jQuery || document.write('<script src="javascripts/libs/jquery-1.6.3.min.js"><\\/script>')
+
+    script(defer, src='js/lib/socket.io.min.js')
+    script(defer, src='js/script.js')
