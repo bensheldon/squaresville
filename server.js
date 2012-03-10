@@ -9,34 +9,54 @@ var sys           = require('sys')
   , io            = require('socket.io').listen(server)
   , port          = 4000;
 
+
 var MAPSIZE = 16;
 var MAXDENSITY = 3;
 var LOOPTIME = 1000;
-var mapAge = 0;
 
-  server.configure(function(){
-    server.use(express.methodOverride());
-    server.use(server.router);
-    server.set('view engine', 'jade');
-    server.set('view options', { layout: false });
-    server.use(express.static(__dirname + '/public'));
+server.configure(function(){
+  server.use(express.methodOverride());
+  server.use(server.router);
+  server.set('view engine', 'jade');
+  server.set('view options', { layout: false });
+  server.use(express.static(__dirname + '/public'));
+});
+
+server.listen(port);
+
+io.sockets.on('connection', function (socket) {
+  socket.emit('message', 'test message');
+  socket.on('rezone', function (data) {
+    map.squares[data.position[0]][data.position[1]].rezone(data.zone);
   });
-  
-  server.listen(port);
-  
-  // Routes
-  server.get('/', function(req, res) {
-    res.render('index', { 
-      title: 'My Site',
-      map: {
-        mapsize: MAPSIZE
-      }
-    });
+});
+
+var Map = require('./models/map').Map;
+var map = new Map(MAPSIZE, io.sockets);
+
+
+// Routes
+server.get('/', function(req, res) {
+  res.render('index', { 
+    title: 'My Site',
+    map: map
   });
-  
-  io.sockets.on('connection', function (socket) {
-    socket.emit('message', 'test message');
-    socket.on('my other event', function (data) {
-      console.log(data);
-    });
+});
+
+
+/**
+ * Game Loop
+ */
+var loop = function() {
+  console.log('Age: ' + map.age);
+  console.log('Population: ' + map.population);
+  map.updateUiMap();
+  map.scanMap( function(square) { 
+    square.calcPopulation();
+    //square.calcMaxDensity();
   });
+
+  map.age++;
+  setTimeout(loop, LOOPTIME); //restart
+}
+loop();

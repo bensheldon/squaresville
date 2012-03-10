@@ -1,8 +1,8 @@
-table#map td{width:20px;height:20px;background-color:brown;text-align:center;position:relative;}table#map td:after{position:absolute;top:0;left:0;display:block;text-align:center;}
-table#map td[data-density="0"]:after{content:"0";}
-table#map td[data-density="1"]:after{content:"1";}
-table#map td[data-density="2"]:after{content:"2";}
-table#map td[data-zone="residential"]{background-color:green;}
+table#map{float:left;margin-right:20px;}table#map td{width:20px;height:20px;background-color:#d65f5f;text-align:center;position:relative;}table#map td:after{position:absolute;top:0;left:0;display:block;text-align:center;}
+table#map td[data-zone="residential"]{background-color:green;}table#map td[data-zone="residential"][data-density="0"]{background-color:#ffffff;border:2px solid green;width:16px;height:16px;}
+table#map td[data-zone="residential"][data-density="1"]{background-color:#4dff4d;}
+table#map td[data-zone="residential"][data-density="2"]{background-color:green;}
+table#map td[data-zone="residential"][data-density="3"]{background-color:#004300;}
 table#map td[data-zone="commercial"]{background-color:blue;}
 table#map td[data-zone="industrial"]{background-color:yellow;}
 table#map td[data-zone="road"]{background-color:gray;}

@@ -1,6 +1,7 @@
 var MAPSIZE = 8;
 var MAXDENSITY = 3;
 var LOOPTIME = 1000;
+var GROWTHRATE = 0.02;
 var mapAge = 0;
 
 var map = new Map(MAPSIZE);
@@ -60,20 +61,3 @@ $(document).ready(function(){
 
 
 
-/**
- * Converts the HTML id into an x,y array
- * e.g. "square-6x5" ==> [6,5]
- */
-function getPositionFromID(id) {
-  var positionString = id.split('-')[1];
-  var positionArray = positionString.split('x');
-  return [parseInt(positionArray[0]), parseInt(positionArray[1])];
-}
-
-/**
- * Converts the HTML id into an x,y array
- * e.g. "square-6x5" ==> [6,5]
- */
-function getIDFromPosition(position) {
-  return "square-" + position[0] + 'x' + position[1];
-}
