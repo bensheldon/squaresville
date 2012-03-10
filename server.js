@@ -7,8 +7,9 @@ var sys           = require('sys')
   , express       = require('express')
   , server        = express.createServer()
   , io            = require('socket.io').listen(server)
-  , host          = process.env.HOST || 'localhost'
-  , port          = process.env.PORT || 4000;
+  , port          = process.env.PORT || 4000
+  , host          = process.env.HOST || 'localhost:4000';
+  
 
 
 var MAPSIZE = 16;

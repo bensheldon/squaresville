@@ -1,5 +1,4 @@
-console.log('http://'+HOST+':'+PORT+'/');
-var socket = io.connect('http://'+HOST+':'+PORT+'/');
+var socket = io.connect('http://'+HOST+'/');
 
 socket.on('connect', function () {
 	socket.on('age', function (message) {
