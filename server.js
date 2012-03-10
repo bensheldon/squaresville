@@ -25,6 +25,12 @@ server.configure(function(){
 
 server.listen(port);
 
+// Use xhr-polling for Heroku... ugh
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
+
 io.sockets.on('connection', function (socket) {
   socket.emit('message', 'test message');
   socket.on('rezone', function (data) {
