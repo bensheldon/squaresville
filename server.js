@@ -7,7 +7,8 @@ var sys           = require('sys')
   , express       = require('express')
   , server        = express.createServer()
   , io            = require('socket.io').listen(server)
-  , port          = 4000;
+  , host          = process.env.HOST || 'localhost'
+  , port          = process.env.PORT || 4000;
 
 
 var MAPSIZE = 16;
@@ -39,6 +40,8 @@ var map = new Map(MAPSIZE, io.sockets);
 server.get('/', function(req, res) {
   res.render('index', { 
     title: 'My Site',
+    host: host,
+    port: port,
     map: map
   });
 });
