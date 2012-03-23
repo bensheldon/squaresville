@@ -1,98 +1,79 @@
-var GROWTHRATE = 0.02;
-
-var Square = function(map, position, zone) {
-  this.population = 0;
-  this.populationCap = 0;
-  this.zone = null;
-  this.density = 0;
+var Square = function(map, position) {
+  this.zone = null; 		  // type of zone
+  this.residents = 0; 		// how many people live here (0 <> 1000)
+  this.jobs = 0; 			    // how many people can be employed here (0 <> 600)
+  this.growthRate = 0; 		// how quickly are residents/jobs increasing (-200 <> 200)
+  this.landValue = 0; 		// what is the perceived value of this square (0 <> 500,000)
+  this.transit = false; 	// can other zones be reached (true | false)
+  this.pollution = 0; 		// level of pollution (0 <> 5)
+  this.polluter = false;	// the zone produces pollution (true | false)
+  this.density = 0;			  // how jammed together is the zone (0 <> 5)
   this.position = [position[0], position[1]];
-  this._map = map; // reference the parent map (not sure if this is correct)
+  this._map = map;			  // the map the square is a part of
 };
 
 Square.prototype.rezone = function(zone) {
   this.zone = zone;
-  this._map.population -= this.population;
   this.population = 0;
   this._map.updateUiSquare(this);
 };
 
-Square.prototype.calcPopulation = function() {
+Square.prototype.calcResidents = function() {
   switch(this.zone) {
     case 'residential':
-      this.calcPopulationResidential();
+      this.calcResidents(globalDemand);
       break;
     case 'commercial':
       break;
   }
 }
 
-Square.prototype.calcPopulationResidential = function() {
-  var growPopulation = 0
+Square.prototype.calcResidents = function(globalDemand) {
+  var growResidents = 0
   // if population is zero
-  if (this.population == 0) {
-    var growPopulation = 4; // default growth;
-    this.population += growPopulation;
-    this._map.population += growPopulation;
-    this.density = 1;
-    this.populationCap = 8;
-    this._map.updateUiSquare(this);
+  if (this.residents == 0) {
+  	if (globalDemand.residential > 0) {
+       growResidents = 1; // default growth;
+       this.growthRate = 100;
+       this.residents += growResidents;
+  	}
+    else {
+      this.growthRate = 0;
+    }
   }
   else {
-    // try to grow the population
-    var growPopulation = Math.ceil(this.population * GROWTHRATE);
-    
-    // check if the population is less than the density
-    if ( (this.population + growPopulation) <= (this.populationCap) ) {
-      this.population += growPopulation;
-      this._map.population += growPopulation;
-    }
-    // otherwise try to increase the density
-    else if (this.density < 3) {
-      this.population += growPopulation;
-      this._map.population += growPopulation;
-      this.density++; // update the density
-      this.populationCap = Math.pow(10, this.density)
-      this._map.updateUiSquare(this);
+	  if ( (globalDemand.residential > 0) 
+      && (this.transit == true) ) { 
+
+      growResidents = this.residents * (globalDemand.residential / 100);
+      growResidents = Math.ceil( growResidents * ((5 - this.pollution) / 5) );
+      this.growthRate = Math.round( (growResidents / this.residents) * 100 );
+      this.residents += growResidents;
+      this.residents = Math.min(this.residents, 1000);
+    } else {
+      if (this.transit == true) {
+        // globalDemand is now negative
+        growResidents = 0.3 * this.residents * (globalDemand.residential / 100);
+        growResidents = Math.ceil( growResidents * ( 1 + this.pollution / 10 ) );
+          // pollution should accelerate the negative growth, here it accelerates to twice
+        this.growthRate = Math.round( (growResidents / this.residents) * 100 );
+        this.residents += growResidents;
+        this.residents = Math.max(this.residents, 0);
+      }
+      else { 
+        // globalDemand but no transit connection 
+        growResidents = -0.10 * this.residents;
+        this.growthRate = Math.round( (growResidents / this.residents) * 100 );
+        this.residents += growResidents;
+        this.residents = Math.max(this.residents, 0);
+      }
     }
   }
 }
 
-Square.prototype.calcMaxDensity = function() {
-  switch(this.zone) {
-    case 'residential':
-      if (this.RecalcMaxDensityResidential()) {
-        this._map.updateUI(this, 'density', this.maxDensity);
-      }
-      break;
-    case 'commercial':
-      break;
-  }
-};
 
-Square.prototype.calcMaxDensityResidential = function() {
-  var adjacentCount = this.adjacentSquaresCount(1);
-  
-  switch(this.maxDensity) {
-    case 0:
-      // should be demand based to go up, but oh well
-      this.maxDensity = 1;
-      return true;
-    case 1:
-      if (adjacentCount.residential > 6) {
-        this.maxDensity = 2;
-        return true;
-      }
-      break;
-    case 2:
-      if (adjacentCount > 8) {
-        this.maxDensity = 2;
-        return true;
-      }
-      break;
-    case 3:
-      break; // no more growth
-  }
-};
+
+
 
 /**
  * Returns a list of positions of squares adjacent to the input position
