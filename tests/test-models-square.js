@@ -1,11 +1,5 @@
 var Square = require('../models/square');
 
-var globalDemand = {
-	residential:  10, 
-	commercial:	  10,
-	industrial:   10
-};
-
 exports.calcResidents = {
   setUp: function (callback) {
     this.square = new Square.Square({}, [0,0]);
@@ -37,8 +31,8 @@ exports.calcResidents = {
 		square.residents = 0;
 		globalDemand.residential = -20;
 		square.calcResidents(globalDemand);
-		test.equal(square.residents, 0, "shouldn't grow");
-		test.equal(square.growthRate, 0, "should stay zero")
+		test.equal(square.residents, 0);
+		test.equal(square.growthRate, 0);
 		test.done();
   },
   "Population of 1 grows according to demand": function (test) {
