@@ -102,7 +102,7 @@ exports.adjacentSquaresCount = {
 		callback(); // required!
 	},
   "Count Adjacent Squares": function (test) {
-		var map = this.map;
+	var map = this.map;
     var adjacentCount = map.adjacentSquaresCount([7,0], 1);
     test.deepEqual(adjacentCount, { 
         null: [ [6, 0 ], [ 6, 1 ] ],
@@ -111,4 +111,57 @@ exports.adjacentSquaresCount = {
     });
 		test.done();
   }
-}
+};
+
+exports.globalDemand = {
+  setUp: function (callback) {    
+    var map = new Map.Map(16, {});
+  	map.squares[7][0].zone = 'residential';
+  	map.squares[7][1].zone = 'commercial'
+  	map.squares[8][0].zone = 'road';
+  	map.squares[8][1].zone = 'road';
+  	map.squares[8][2].zone = 'road';
+  	map.squares[8][3].zone = 'road';
+  	map.squares[8][4].zone = 'road';
+  	map.squares[8][5].zone = 'road';
+  	map.squares[8][6].zone = 'road';
+  	map.squares[8][7].zone = 'road';
+  	map.squares[9][4].zone = 'commercial'
+  	map.squares[9][7].zone = 'industrial';
+  	this.map = map;
+  	callback(); // required!
+  },
+  tearDown: function (callback) {
+		delete this.map;
+		callback(); // required!
+	},
+  "External Market Multiplier": function (test) {
+	  var map = this.map;
+    map.age = 0;
+    test.equal(map.globalDemand().externalMarketMultiplier, 1.2000000000000002);
+    map.age = 50;
+    test.equal(map.globalDemand().externalMarketMultiplier, 1);
+    map.age = 100;
+    test.equal(map.globalDemand().externalMarketMultiplier, .8);
+		test.done();
+  },
+  "Projected Populations": function (test) {
+	  var map = this.map;
+    map.residents = 110000;
+    map.jobs.commercial = 80000;
+    map.jobs.industrial = 25000;
+    var results = map.globalDemand();
+    test.equal(results.projectedResidents, 107200);
+    test.equal(results.projectedCommercialJobs, 60875);
+    test.equal(results.projectedIndustrialJobs, 31429);
+    test.done();
+  },
+  "Effect Demand": function (test) {
+	  var map = this.map;
+    var results = map.globalDemand();
+    test.equal(map.demand.residential, 650);
+    test.done();
+  }
+  
+  
+};
