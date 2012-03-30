@@ -21,34 +21,29 @@ Square.prototype.rezone = function(zone) {
   this._map.updateUiSquare(this);
 };
 
-Square.prototype.calcResidents = function() {
+Square.prototype.doZone = function() {
   switch(this.zone) {
     case 'residential':
-      this.calcResidents(globalDemand);
+      this.doResidential();
       break;
     case 'commercial':
       break;
   }
 }
 
-Square.prototype.calcResidents = function() {
+Square.prototype.doResidential = function() {
   var growResidents = 0
-  
+    
   if ( (this._map.demand.residential > 0) 
-    && (this.transit == true) ) {
-      
+    && (this.transit === true) ) {
+    
     // if population is zero
     if (this.residents == 0) {
       growResidents = 1; // default growth;
-      this.growthRate = 100;
-      this.residents += growResidents;
     }
     else { // (this.residents > 0)
       growResidents = this.residents * (this._map.demand.residential / 100);
       growResidents = Math.ceil( growResidents * ((5 - this.pollution) / 5) );
-      this.growthRate = Math.round( (growResidents / this.residents) * 100 );
-      this.residents += growResidents;
-      this.residents = Math.min(this.residents, 1000);
     }
   } else {
     if (this.residents == 0) {
@@ -56,25 +51,41 @@ Square.prototype.calcResidents = function() {
       this.residents = 0;
     }
     else { // (this.residents > 0)
-      
       if (this.transit == true) {
         // globalDemand is now negative
         growResidents = 0.3 * this.residents * (this._map.demand.residential / 100);
+        // pollution should accelerate the negative growth, here it accelerates to twice
         growResidents = Math.ceil( growResidents * ( 1 + this.pollution / 10 ) );
-          // pollution should accelerate the negative growth, here it accelerates to twice
-        this.growthRate = Math.round( (growResidents / this.residents) * 100 );
-        this.residents += growResidents;
-        this.residents = Math.max(this.residents, 0);
       }
       else { // (this.transit == false)
         // globalDemand but no transit connection 
         growResidents = -0.10 * this.residents;
-        this.growthRate = Math.round( (growResidents / this.residents) * 100 );
-        this.residents += growResidents;
-        this.residents = Math.max(this.residents, 0);
       }
     }
   }
+
+  // population should never exceed 1000
+  if ((this.residents + growResidents) > 1000) {
+    growResidents = 1000 - this.residents;
+  }
+  
+
+  // calculate growthRate
+  if (this.residents > 0) {
+    this.growthRate = Math.round( (growResidents / this.residents) * 100 );
+  }
+  else {
+    if (growResidents > 0) {
+      this.growthRate = 100;
+    }
+    else {
+      this.growthRate = 0;
+    }
+  }
+  // and finally add them to thd square and map
+  this.residents += growResidents;
+  this._map.residents += growResidents;
+
 }
 
 exports.Square = Square;
