@@ -41,30 +41,25 @@ io.sockets.on('connection', function (socket) {
 
 var Map = require('./models/map').Map;
 var map = new Map(MAPSIZE, io.sockets);
-map.squares[7][0].zone = 'residential';
-map.squares[7][1].zone = 'commercial'
-map.squares[8][0].zone = 'road';
-map.squares[8][1].zone = 'road';
-map.squares[8][2].zone = 'road';
+map.squares[7][3].zone = 'residential';
 map.squares[8][3].zone = 'road';
+map.squares[9][3].zone = 'residential';
+map.squares[10][3].zone = 'residential'
+map.squares[7][4].zone = 'residential';
+map.squares[9][4].zone = 'commercial';
+map.squares[10][4].zone = 'residential'
+
+
 map.squares[8][4].zone = 'road';
 map.squares[8][5].zone = 'road';
 map.squares[8][6].zone = 'road';
 map.squares[8][7].zone = 'road';
-map.squares[9][3].zone = 'road';
-map.squares[10][3].zone = 'road';
-map.squares[10][4].zone = 'road';
-map.squares[10][5].zone = 'road';
-map.squares[10][6].zone = 'road';
-map.squares[10][7].zone = 'road';
-map.squares[10][8].zone = 'road';
-map.squares[9][4] .zone = 'commercial';
-map.squares[9][9].zone = 'industrial';
-// setup a short strip
-map.squares[11][0].zone = 'residential';
-map.squares[14][0].zone = 'road';
-map.squares[15][0].zone = 'commercial';
-
+map.squares[8][8].zone = 'road';
+map.squares[6][8].zone = 'industrial';
+map.squares[7][8].zone = 'industrial';
+map.squares[6][9].zone = 'industrial';
+map.squares[7][9].zone = 'industrial';
+map.squares[8][9].zone = 'road';
 
 
 
@@ -86,18 +81,27 @@ var loop = function() {
   console.log('Age: ' + map.age);
   console.log('Population: ' + map.residents);
   
-  var cycle = map.age % 2; 
+  // Update the map on every tick
+  map.updateUiMap();
+  
+  var cycle = map.age % 3; 
   
   switch (cycle) {
     case 0:
       map.globalDemand();
-      map.updateUiMap();
       break;
 	  case 1:
 		  map.scanMap( function(square) {
 		    square.doZone();
+        console.log(square.transit);
 		  });
       break;
+	  case 2:
+		  map.scanMap( function(square) {
+		    square.doTransit();
+		  });
+      break;
+    
   }
   map.age++;
   setTimeout(loop, LOOPTIME); //restart
