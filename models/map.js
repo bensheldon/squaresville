@@ -1,7 +1,7 @@
 var Square = require('./square.js').Square
-	, _ = require('underscore');
+  , _ = require('underscore');
 
-var MAXDEMAND = 2000; 
+var MAXDEMAND = 100; 
 
 var Map = function(mapsize, emitter) {
   this.age = 0;
@@ -9,8 +9,8 @@ var Map = function(mapsize, emitter) {
   this.mapsize = mapsize;
   this.residents = 0;
   this.jobs = {
-	  commercial: 0,
-	  industrial: 0
+    commercial: 0,
+    industrial: 0
   };
   this.demand = {
     residential: 500,
@@ -30,7 +30,7 @@ var Map = function(mapsize, emitter) {
 };
 
 Map.prototype.globalDemand = function() {
-	var internalMarketDenom = 3.7
+  var internalMarketDenom = 3.7
     , projectedIndJobsMin  = 5
     , businessCycle       = 200   // length of 1/2 full business cycle in age
     , birthRate           = 0.02
@@ -107,15 +107,21 @@ Map.prototype.globalDemand = function() {
     commercialRatio = Math.min(commercialRatio, ratioMax);
     industrialRatio = Math.min(industrialRatio, ratioMax);
     
+  
     // Change the velocity of demand as mediated by the RATIOEFFECT
-    this.demand.residential += this.demand.residential * (residentialRatio - 1) / ratioEffect; // half the effect of the demand
-    this.demand.commercial += this.demand.commercial * (commercialRatio - 1) / ratioEffect; // half the effect of the demand
-    this.demand.industrial += this.demand.industrial * (industrialRatio - 1) / ratioEffect; // half the effect of the demand
+    // Add 1 just so it never gets totally stuck with a zero multiplier
+    this.demand.residential += 1 + this.demand.residential * (residentialRatio - 1) / ratioEffect; // half the effect of the demand
+    this.demand.commercial += 1 + this.demand.commercial * (commercialRatio - 1) / ratioEffect; // half the effect of the demand
+    this.demand.industrial += 1 + this.demand.industrial * (industrialRatio - 1) / ratioEffect; // half the effect of the demand
     
     this.demand.residential = Math.max(-MAXDEMAND, Math.min(MAXDEMAND, this.demand.residential));
     this.demand.commercial = Math.max(-1*MAXDEMAND, Math.min(MAXDEMAND, this.demand.commercial));
     this.demand.industrial = Math.max(-1*MAXDEMAND, Math.min(MAXDEMAND, this.demand.industrial));
     
+    this.demand.residential = Math.floor(this.demand.residential);
+    this.demand.commercial = Math.floor(this.demand.commercial);
+    this.demand.industrial = Math.floor(this.demand.industrial);
+  
     // return some values for easy debugging/testing
     return { 
       laborBase: laborBase,
@@ -130,9 +136,6 @@ Map.prototype.globalDemand = function() {
       projectedIndustrialJobs: projectedIndustrialJobs
     }
 }
-
-
-
 
 /**
  * Scan through all squares in the map and
@@ -153,33 +156,33 @@ Map.prototype.adjacentSquares = function(position, distance) {
   var squarePositions = [];
   
   if (distance === 0) {
-		if(position[1] - 1 > 0) { // North
-			squarePositions.push([position[0],position[1]-1]);
-		}
-		if (position[0] + 1 < this.mapsize) { // East
-			squarePositions.push([position[0]+1, position[1]]);
-		}
-		if (position[1] + 1 < this.mapsize) { // South
-			squarePositions.push([position[0], position[1]+1]);
-		}
-		if (position[0] - 1 > 0) { // West
-			squarePositions.push([position[0] -1 , position[1]]);
-		}
-	}
-	else { // distance > 0  
-	  // Starting in the North-West corner, scan adjacent squares
-	  for (var y = position[1] - distance; y <= position[1] + distance; y++) {
-	    if ( (y >= 0) && (y < this.mapsize)) { // not beyond border of map
-	      for (var x = position[0] - distance; x <= position[0] + distance; x++) {
-	        if ( (x >= 0) && (x < this.mapsize) ) { // not beyond border of map
-	          if ( (x !== position[0]) || (y !== position[1]) ) { // not the square itself
-	            squarePositions.push([x,y]);
-	          }
-	        }
-	      }
-	    }
-	  }
-	}
+    if(position[1] - 1 > 0) { // North
+      squarePositions.push([position[0],position[1]-1]);
+    }
+    if (position[0] + 1 < this.mapsize) { // East
+      squarePositions.push([position[0]+1, position[1]]);
+    }
+    if (position[1] + 1 < this.mapsize) { // South
+      squarePositions.push([position[0], position[1]+1]);
+    }
+    if (position[0] - 1 > 0) { // West
+      squarePositions.push([position[0] -1 , position[1]]);
+    }
+  }
+  else { // distance > 0  
+    // Starting in the North-West corner, scan adjacent squares
+    for (var y = position[1] - distance; y <= position[1] + distance; y++) {
+      if ( (y >= 0) && (y < this.mapsize)) { // not beyond border of map
+        for (var x = position[0] - distance; x <= position[0] + distance; x++) {
+          if ( (x >= 0) && (x < this.mapsize) ) { // not beyond border of map
+            if ( (x !== position[0]) || (y !== position[1]) ) { // not the square itself
+              squarePositions.push([x,y]);
+            }
+          }
+        }
+      }
+    }
+  }
   return squarePositions;
 };
 
@@ -192,11 +195,11 @@ Map.prototype.adjacentSquaresCount = function (position, distance) {
     var position = adjacentSquares[i];
     var square = this.squares[position[0]][position[1]];
     if (count[square.zone] === undefined) {
-			count[square.zone] = [square.position];
-		}
-		else {
-			count[square.zone].push(square.position);
-		}
+      count[square.zone] = [square.position];
+    }
+    else {
+      count[square.zone].push(square.position);
+    }
   }
   return count;
 };
