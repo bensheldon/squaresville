@@ -33,18 +33,21 @@ html(class='no-js', lang='en')
           dt Age
           dd#age= map.age
           
-          dt Population
-          dd#population= map.residents
-          
-          dt Residential Capacity
-          dd#residentialCap 0
+          dt Residents
+          dd#residents= map.residents
+      
+          dt Jobs: Commercial
+          dd#jobs-commercial= map.jobs.commercial
+ 
+          dt Jobs: Industrial
+          dd#jobs-industrial= map.jobs.industrial
           
           dt Residential Demand
-          dd#demand-residential 0
+          dd#demand-residential= map.demand.residential
           dt Commercial Demand 
-          dd#demand-commercial 0
+          dd#demand-commercial= map.demand.commercial
           dt Industrial Demand
-          dd#demand-industrial 0
+          dd#demand-industrial= map.demand.industrial
           
         
       footer

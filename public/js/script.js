@@ -15,8 +15,11 @@ socket.on('connect', function () {
   
   socket.on('updateMap', function (message) {
     var map = message.map;
-    $('#population').text(map.residents);
+	
     $('#age').text(map.age);
+    $('#residents').text(map.residents);
+    $('#jobs-commercial').text(map.jobs.commercial);
+    $('#jobs-industrial').text(map.jobs.industrial);
     $('#demand-residential').text(map.demand.residential);
     $('#demand-commercial').text(map.demand.commercial);
     $('#demand-industrial').text(map.demand.industrial);
