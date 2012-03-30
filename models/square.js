@@ -169,12 +169,13 @@ Square.prototype.doTransit = function() {
       break;
     case 'industrial':
       var resTrip = new Travel(this._map, this.position, 'residential');
-      if (resTrip == true) {
+      if (resTrip) {
         this.transit = true;
       }
       else {
         this.transit = false;
       }
+      console.log(this.transit);
       break;
       
   }
