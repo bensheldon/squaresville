@@ -60,7 +60,6 @@ var Travel = function (map, start, destination) {
     }
   }
   
-  console.log(route);
   return false;
 };
 
