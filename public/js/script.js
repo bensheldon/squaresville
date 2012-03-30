@@ -1,9 +1,9 @@
 var socket = io.connect('http://'+HOST+'/');
 
 socket.on('connect', function () {
-	socket.on('age', function (message) {
-	  $('#stats #age').text(message);
-	});
+  socket.on('age', function (message) {
+    $('#stats #age').text(message);
+  });
   
   socket.on('updateSquare', function (message) {
     console.log(message);
@@ -15,13 +15,16 @@ socket.on('connect', function () {
   
   socket.on('updateMap', function (message) {
     var map = message.map;
-    $('#population').text(map.population);
+    $('#population').text(map.residents);
     $('#age').text(map.age);
+    $('#demand-residential').text(map.demand.residential);
+    $('#demand-commercial').text(map.demand.commercial);
+    $('#demand-industrial').text(map.demand.industrial);
   });
   
-	socket.on('service', function (message) {
-	  $('#messages').text(message);
-	});
+  socket.on('service', function (message) {
+    $('#messages').text(message);
+  });
   
 });
 
@@ -34,23 +37,43 @@ $(document).ready(function(){
     var id = thisSquare.attr("id");
     var position = getPositionFromID(id);
     
-    if (thisSquare.attr("data-zone") === undefined) {
-      socket.emit('rezone', {
-        position: [position[0], position[1]],
-        zone: 'residential'
-      });
-    }
-    else if (thisSquare.attr("data-zone") === 'residential') {
-      socket.emit('rezone', {
-        position: [position[0], position[1]],
-        zone: 'commercial'
-      });
-    }
-    else {
-      socket.emit('rezone', {
-        position: [position[0], position[1]],
-        zone: null
-      });
+    switch(thisSquare.attr("data-zone")) {
+      case undefined:
+        socket.emit('rezone', {
+          position: [position[0], position[1]],
+          zone: 'residential'
+        });
+        break;
+       
+      case 'residential':
+        socket.emit('rezone', {
+          position: [position[0], position[1]],
+          zone: 'commercial'
+        });
+        break;
+        
+      case 'commercial':
+        socket.emit('rezone', {
+          position: [position[0], position[1]],
+          zone: 'industrial'
+        });
+        break;
+        
+      case 'industrial':
+        socket.emit('rezone', {
+          position: [position[0], position[1]],
+          zone: 'road'
+        });
+        break;
+ 
+      case 'road':
+      default:
+        socket.emit('rezone', {
+          position: [position[0], position[1]],
+          zone: null
+        });
+        break;
+        
     }
   });
 });
