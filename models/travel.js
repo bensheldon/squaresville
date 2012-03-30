@@ -2,7 +2,7 @@ var _ = require('underscore');
 var MAXDISTANCE = 8;
 
 var Travel = function (map, start, destination) {
-	var route = [];
+  var route = [];
   var adjacentSquares = map.adjacentSquaresCount(start, 2);
   
   // If no road whatsoever, then just fail entirely
