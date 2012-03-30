@@ -93,7 +93,6 @@ var loop = function() {
 	  case 1:
 		  map.scanMap( function(square) {
 		    square.doZone();
-        console.log(square.transit);
 		  });
       break;
 	  case 2:
