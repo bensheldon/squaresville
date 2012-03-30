@@ -32,6 +32,7 @@ Square.prototype.doZone = function() {
       this.doResidential();
       break;
     case 'commercial':
+      this.doCommercial();
       break;
     case 'industrial':
       this.doIndustrial();
@@ -94,6 +95,58 @@ Square.prototype.doResidential = function() {
   this.residents += growResidents;
   this._map.residents += growResidents;
 }
+
+Square.prototype.doCommercial = function() {
+  var newJobs = 0
+    
+  if ( (this._map.demand.commercial > 0) 
+    && (this.transit === true) ) {
+    
+    // if current jobs is zero
+    if (this.jobs == 0) {
+      newJobs = 1; // default growth;
+    }
+    else { // (this.jobs > 0)
+      newJobs = Math.ceil(this.jobs * (this._map.demand.commercial / 100));
+    }
+  } else {
+    if (this.jobs == 0) {
+      newJobs = 0;
+    }
+    else { // (this.jobs > 0)
+      if (this.transit == true) {
+        // Demand is now negative
+        newJobs = Math.ceil(0.3 * this.jobs * (this._map.demand.commercial / 100));
+      }
+      else { // (this.transit == false)
+        // Demand but no transit connection 
+        newJobs = -0.10 * this.jobs;
+      }
+    }
+  }
+
+  // Jobs should never exceed 1000
+  if ((this.jobs + newJobs) > 1000) {
+    newJobs = 1000 - this.jobs;
+  }
+  
+  // calculate growthRate
+  if (this.jobs > 0) {
+    this.growthRate = Math.round( (newJobs / this.jobs) * 100 );
+  }
+  else {
+    if (newJobs > 0) {
+      this.growthRate = 100;
+    }
+    else {
+      this.growthRate = 0;
+    }
+  }
+  // and finally add them to the square and map
+  this.jobs += newJobs;
+  this._map.jobs.commercial += newJobs;
+}
+
 
 Square.prototype.doIndustrial = function() {
   var newJobs = 0
@@ -166,6 +219,15 @@ Square.prototype.doTransit = function() {
       }
       break;
     case 'commercial':
+	    var resTrip = new Travel(this._map, this.position, 'residential');
+	    var indTrip = new Travel(this._map, this.position, 'industrial');
+      
+	    if (resTrip && indTrip) {
+	      this.transit = true;
+	    }
+	    else {
+	      this.transit = false;
+	    }
       break;
     case 'industrial':
       var resTrip = new Travel(this._map, this.position, 'residential');
@@ -177,7 +239,6 @@ Square.prototype.doTransit = function() {
       }
       console.log(this.transit);
       break;
-      
   }
 }
 
