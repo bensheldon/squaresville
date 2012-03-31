@@ -73,12 +73,8 @@ Square.prototype.doResidential = function() {
     }
   }
 
-  // population should never exceed 1000
-  if ((this.residents + growResidents) > 1000) {
-    growResidents = 1000 - this.residents;
-  }
+  growResidents = this.tryResidentialBuild(growResidents);
   
-
   // calculate growthRate
   if (this.residents > 0) {
     this.growthRate = Math.round( (growResidents / this.residents) * 100 );
@@ -125,10 +121,8 @@ Square.prototype.doCommercial = function() {
     }
   }
 
-  // Jobs should never exceed 1000
-  if ((this.jobs + newJobs) > 1000) {
-    newJobs = 1000 - this.jobs;
-  }
+  // Try to build out a larger building/larger density
+  newJobs = this.tryCommercialBuild(newJobs);
   
   // calculate growthRate
   if (this.jobs > 0) {
@@ -146,7 +140,6 @@ Square.prototype.doCommercial = function() {
   this.jobs += newJobs;
   this._map.jobs.commercial += newJobs;
 }
-
 
 Square.prototype.doIndustrial = function() {
   var newJobs = 0
@@ -177,10 +170,8 @@ Square.prototype.doIndustrial = function() {
     }
   }
 
-  // Jobs should never exceed 1000
-  if ((this.jobs + newJobs) > 1000) {
-    newJobs = 1000 - this.jobs;
-  }
+  // Try to build out a larger building/larger density
+  newJobs = this.tryIndustrialBuild(newJobs);
   
   // calculate growthRate
   if (this.jobs > 0) {
@@ -198,6 +189,58 @@ Square.prototype.doIndustrial = function() {
   this.jobs += newJobs;
   this._map.jobs.industrial += newJobs;
 }
+
+Square.prototype.tryResidentialBuild = function(newResidents) {
+  var residentialBase = 8;
+  
+  // The residential Capacity of building are 1, 8, 64, 512
+  if ((this.residents + newResidents) <= Math.pow(residentialBase, this.density)) {
+    if (this.density < 3) {
+      this.density += 1;
+      this._map.updateUiSquare(this);
+    }
+  }
+  else {
+    // No more room to grow
+    newResidents = 0;
+  }
+  return newResidents;
+}
+
+Square.prototype.tryCommercialBuild = function(newJobs) {
+  var commercialBase = 6;
+  
+  // The residential Capacity of building are 1, 6, 36, 216
+  if ( (this.jobs + newJobs) <= Math.pow(commercialBase, this.density)) {
+    if (this.density < 3) {
+      this.density += 1;
+      this._map.updateUiSquare(this);
+    }
+  }
+  else {
+    // No more room to grow
+    newJobs = 0;
+  }
+  return newJobs;
+}
+
+Square.prototype.tryIndustrialBuild = function(newJobs) {
+  var industrialBase = 9;
+  
+  // The residential Capacity of building are 1, 9, 81, 729
+  if ((this.jobs + newJobs) <= Math.pow(industrialBase, this.density) ) {
+    if (this.density < 3) {
+      this.density += 1;
+      this._map.updateUiSquare(this);
+    }
+  }
+  else {
+    // No more room to grow
+    newJobs = 0;
+  }
+  return newJobs; 
+}
+
 
 
 Square.prototype.doTransit = function() {

@@ -222,6 +222,7 @@ Map.prototype.updateUiSquare = function(square) {
       position: square.position,
       zone: square.zone,
       residents: square.residents,
+      density: square.density,
       jobs: square.jobs,
       pollution: square.pollution
     }
