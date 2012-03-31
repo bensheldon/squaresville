@@ -110,11 +110,11 @@ Map.prototype.globalDemand = function() {
   
     // Change the velocity of demand as mediated by the RATIOEFFECT
     // Add 1 just so it never gets totally stuck with a zero multiplier
-    this.demand.residential += 1 + this.demand.residential * (residentialRatio - 1) / ratioEffect; // half the effect of the demand
-    this.demand.commercial += 1 + this.demand.commercial * (commercialRatio - 1) / ratioEffect; // half the effect of the demand
-    this.demand.industrial += 1 + this.demand.industrial * (industrialRatio - 1) / ratioEffect; // half the effect of the demand
+    this.demand.residential += 1 + 30 * (residentialRatio - 1) / ratioEffect; // half theeffect of the demand
+    this.demand.commercial += 1 + 50 * (commercialRatio - 1) / ratioEffect; // half the effect of the demand
+    this.demand.industrial += 1 + 20 * (industrialRatio - 1) / ratioEffect; // half the effect of the demand
     
-    this.demand.residential = Math.max(-MAXDEMAND, Math.min(MAXDEMAND, this.demand.residential));
+    this.demand.residential = Math.max(-1*MAXDEMAND, Math.min(MAXDEMAND, this.demand.residential));
     this.demand.commercial = Math.max(-1*MAXDEMAND, Math.min(MAXDEMAND, this.demand.commercial));
     this.demand.industrial = Math.max(-1*MAXDEMAND, Math.min(MAXDEMAND, this.demand.industrial));
     
@@ -133,7 +133,10 @@ Map.prototype.globalDemand = function() {
       internalMarket: internalMarket,
       projectedResidents: projectedResidents,
       projectedCommercialJobs: projectedCommercialJobs,
-      projectedIndustrialJobs: projectedIndustrialJobs
+      projectedIndustrialJobs: projectedIndustrialJobs,
+	  demandResidential: this.demand.residential,
+	  demandCommercial: this.demand.commercial,
+	  demandIndustrial: this.demand.industrial
     }
 }
 
