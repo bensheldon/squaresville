@@ -1,5 +1,5 @@
 var Travel = require('./travel.js').Travel
-	, _ = require('underscore');
+  , _ = require('underscore');
 
 
 var Square = function(map, position) {
@@ -191,18 +191,42 @@ Square.prototype.doIndustrial = function() {
 }
 
 Square.prototype.tryResidentialBuild = function(newResidents) {
-  var residentialBase = 8;
-  
-  // The residential Capacity of building are 1, 8, 64, 512
-  if ((this.residents + newResidents) <= Math.pow(residentialBase, this.density)) {
-    if (this.density < 3) {
-      this.density += 1;
-      this._map.updateUiSquare(this);
-    }
-  }
-  else {
-    // No more room to grow
-    newResidents = 0;
+  var max = [0, 10, 55, 280];
+  switch(this.density) {
+    case 0:
+      if (newResidents) {
+        this.density = 1;
+        this._map.updateUiSquare(this);
+      }
+      break;
+    case 1:
+      if ( (this.residents + newResidents) > max[1]) {
+        // determine if there is enough global size to grow
+        if (this._map.residents > 100) {
+          this.density = 2;
+          this._map.updateUiSquare(this);
+        }
+        else { // not ready to grow yet
+          newResidents = max[1] - this.residents; // max out the size
+        }
+      }
+      break;
+    case 2:
+      if ( (this.residents + newResidents) > max[2] ) {
+        if (this._map.residents > 1500) {
+          this.density = 2;
+          this._map.updateUiSquare(this);          
+        }
+      }
+      else {
+        newResidents = max[2] - this.residents; // max out the size
+      }
+      break;
+    case 3:
+      if ( (this.residents + newResidents) > max[3] ) {
+        newResidents = max[3] - this.residents; // max out the size
+      }
+      break;
   }
   return newResidents;
 }
@@ -241,16 +265,13 @@ Square.prototype.tryIndustrialBuild = function(newJobs) {
   return newJobs; 
 }
 
-
-
 Square.prototype.doTransit = function() {
-  
   switch(this.zone) {
     case 'residential':
-      var indTrip = new Travel(this._map, this.position, 'commercial');
-      var comTrip = new Travel(this._map, this.position, 'industrial');
-            
-      if (indTrip && comTrip) {
+      var indTrip = Travel(this._map, this.position, 'commercial');
+      var comTrip = Travel(this._map, this.position, 'industrial');
+                  
+      if ( indTrip && comTrip ) {
         this.transit = true;
       }
       else if(indTrip && (this._map.residents < 100) ) {
@@ -262,15 +283,15 @@ Square.prototype.doTransit = function() {
       }
       break;
     case 'commercial':
-	    var resTrip = new Travel(this._map, this.position, 'residential');
-	    var indTrip = new Travel(this._map, this.position, 'industrial');
+      var resTrip = new Travel(this._map, this.position, 'residential');
+      var indTrip = new Travel(this._map, this.position, 'industrial');
       
-	    if (resTrip && indTrip) {
-	      this.transit = true;
-	    }
-	    else {
-	      this.transit = false;
-	    }
+      if (resTrip && indTrip) {
+        this.transit = true;
+      }
+      else {
+        this.transit = false;
+      }
       break;
     case 'industrial':
       var resTrip = new Travel(this._map, this.position, 'residential');
@@ -280,7 +301,6 @@ Square.prototype.doTransit = function() {
       else {
         this.transit = false;
       }
-      console.log(this.transit);
       break;
   }
 }
