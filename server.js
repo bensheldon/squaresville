@@ -49,7 +49,6 @@ map.squares[7][4].zone = 'residential';
 map.squares[9][4].zone = 'commercial';
 map.squares[10][4].zone = 'residential'
 
-
 map.squares[8][4].zone = 'road';
 map.squares[8][5].zone = 'road';
 map.squares[8][6].zone = 'road';
@@ -61,6 +60,7 @@ map.squares[6][9].zone = 'industrial';
 map.squares[7][9].zone = 'industrial';
 map.squares[8][9].zone = 'road';
 
+map.squares[15][15].zone = 'residential'
 
 
 // Routes
@@ -97,7 +97,9 @@ var loop = function() {
       break;
 	  case 2:
 		  map.scanMap( function(square) {
-		    square.doTransit();
+        if (square.zone ) {
+		      square.doTransit();
+        }
 		  });
       break;
     
