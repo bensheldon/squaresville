@@ -1,15 +1,15 @@
 _ = require("underscore")
 
-MAXDISTANCE = 8
+config = require("../config")
 
 class Travel
   constructor: (map, start, destination) ->
     route = []
     adjacentSquares = map.adjacentSquaresCount(start, 2)
-    
+
     # If no road whatsoever, then just fail entirely
     return false  if adjacentSquares["road"] is `undefined`
-    
+
     # Let's go for a walk
     if adjacentSquares[destination] isnt `undefined`
       return (
@@ -18,13 +18,13 @@ class Travel
         route: []
       )
     adjacentRoads = adjacentSquares["road"]
-    
+
     # Now we'll try to drive
-    while route.length < MAXDISTANCE
-      
+    while route.length < config['MAXDISTANCE']
+
       # Choose a random road from our available roads
       if route.length is 0
-        
+
         # for our first drive, we can walk 2 squares from our start to find a road
         # which means we can recycle the earlier adjacentSquares; choose a random one
         driveOn = adjacentRoads[Math.floor(Math.random() * adjacentRoads.length)]
@@ -32,7 +32,7 @@ class Travel
         adjacentSquares = map.adjacentSquaresCount(driveOn, 0) #get adjacent road squares
         return false  if adjacentSquares["road"] is `undefined` # nowhere else to go.
         adjacentRoads = adjacentSquares["road"]
-        
+
         # remove any roads we've previously driven on
         # we have to map to JSON then map back to array to use the Underscore library
         adjacentRoads = _.map(adjacentRoads, (item) ->

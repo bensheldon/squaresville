@@ -1,6 +1,7 @@
-Travel = require("./travel")
-
 _ = require("underscore")
+
+config = require("../config")
+Travel = require("./travel")
 
 class Square
 
@@ -38,7 +39,7 @@ class Square
   doResidential: ->
     growResidents = 0
     if (@_map.demand.residential > 0) and (@transit is true)
-      
+
       # if population is zero
       if @residents is 0
         growResidents = 1 # default growth;
@@ -51,17 +52,17 @@ class Square
         @residents = 0
       else # (this.residents > 0)
         if @transit is true
-          
+
           # globalDemand is now negative
           growResidents = 0.3 * @residents * (@_map.demand.residential / 100)
-          
+
           # pollution should accelerate the negative growth, here it accelerates to twice
           growResidents = Math.ceil(growResidents * (1 + @pollution / 10))
         else # (this.transit == false)
-          # globalDemand but no transit connection 
+          # globalDemand but no transit connection
           growResidents = -0.10 * @residents
     growResidents = @tryResidentialBuild(growResidents)
-    
+
     # calculate growthRate
     if @residents > 0
       @growthRate = Math.round((growResidents / @residents) * 100)
@@ -70,7 +71,7 @@ class Square
         @growthRate = 100
       else
         @growthRate = 0
-    
+
     # and finally add them to the square and map
     @residents += growResidents
     @_map.residents += growResidents
@@ -78,7 +79,7 @@ class Square
   doCommercial: ->
     newJobs = 0
     if (@_map.demand.commercial > 0) and (@transit is true)
-      
+
       # if current jobs is zero
       if @jobs is 0
         newJobs = 1 # default growth;
@@ -89,16 +90,16 @@ class Square
         newJobs = 0
       else # (this.jobs > 0)
         if @transit is true
-          
+
           # Demand is now negative
           newJobs = Math.ceil(0.3 * @jobs * (@_map.demand.commercial / 100))
         else # (this.transit == false)
-          # Demand but no transit connection 
+          # Demand but no transit connection
           newJobs = -0.10 * @jobs
-    
+
     # Try to build out a larger building/larger density
     newJobs = @tryCommercialBuild(newJobs)
-    
+
     # calculate growthRate
     if @jobs > 0
       @growthRate = Math.round((newJobs / @jobs) * 100)
@@ -107,7 +108,7 @@ class Square
         @growthRate = 100
       else
         @growthRate = 0
-    
+
     # and finally add them to the square and map
     @jobs += newJobs
     @_map.jobs.commercial += newJobs
@@ -115,7 +116,7 @@ class Square
   doIndustrial: ->
     newJobs = 0
     if (@_map.demand.industrial > 0) and (@transit is true)
-      
+
       # if population is zero
       if @jobs is 0
         newJobs = 1 # default growth;
@@ -126,16 +127,16 @@ class Square
         newJobs = 0
       else # (this.jobs > 0)
         if @transit is true
-          
+
           # Demand is now negative
           newJobs = Math.ceil(0.3 * @jobs * (@_map.demand.industrial / 100))
         else # (this.transit == false)
-          # Demand but no transit connection 
+          # Demand but no transit connection
           newJobs = -0.10 * @jobs
-    
+
     # Try to build out a larger building/larger density
     newJobs = @tryIndustrialBuild(newJobs)
-    
+
     # calculate growthRate
     if @jobs > 0
       @growthRate = Math.round((newJobs / @jobs) * 100)
@@ -144,7 +145,7 @@ class Square
         @growthRate = 100
       else
         @growthRate = 0
-    
+
     # and finally add them to the square and map
     @jobs += newJobs
     @_map.jobs.industrial += newJobs
@@ -158,7 +159,7 @@ class Square
           @_map.updateUiSquare this
       when 1
         if (@residents + newResidents) > max[1]
-          
+
           # determine if there is enough global size to grow
           if @_map.residents > 100
             @density = 2
@@ -178,28 +179,28 @@ class Square
 
   tryCommercialBuild: (newJobs) ->
     commercialBase = 6
-    
+
     # The residential Capacity of building are 1, 6, 36, 216
     if (@jobs + newJobs) <= Math.pow(commercialBase, @density)
       if @density < 3
         @density += 1
         @_map.updateUiSquare this
     else
-      
+
       # No more room to grow
       newJobs = 0
     newJobs
 
   tryIndustrialBuild: (newJobs) ->
     industrialBase = 9
-    
+
     # The residential Capacity of building are 1, 9, 81, 729
     if (@jobs + newJobs) <= Math.pow(industrialBase, @density)
       if @density < 3
         @density += 1
         @_map.updateUiSquare this
     else
-      
+
       # No more room to grow
       newJobs = 0
     newJobs

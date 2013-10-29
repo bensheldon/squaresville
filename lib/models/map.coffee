@@ -1,7 +1,7 @@
-Square = require("./square")
 _ = require("underscore")
 
-MAXDEMAND = 100
+config = require("../config")
+Square = require("./square")
 
 class Map
   constructor: (mapsize, emitter) ->
@@ -17,7 +17,7 @@ class Map
       residential: 500
       commercial: 0
       industrial: 500
-    
+
     # Setup our squares
     @squares = [mapsize]
     x = 0
@@ -41,7 +41,7 @@ class Map
     ratioMax = 2
     baseMax = 1.3 # Used for laborBase and employmentBase
     ratioEffect = 1
-    
+
     # cycle external demand multiplier between .8 and 1.2
     externalMarketMultiplier = 0.80 + (Math.cos(Math.PI * (@age % businessCycle) / (businessCycle / 2)) + 1) / 5
     laborBase = undefined # LaborBase: residents per job
@@ -56,28 +56,28 @@ class Map
       jobsBase = Math.min((@jobs.commercial + @jobs.industrial) / @residents, baseMax)
     else
       jobsBase = 1
-    
+
     ###
     Calculate Projected Residential Population
     ###
     migrations = Math.round(@residents * (jobsBase - 1))
-    
+
     # If more jobs than residents, people move in; if less, they move out
     births = Math.round(@residents * birthRate)
     projectedResidents = @residents + migrations + births
-    
+
     ###
     Calculate Projected Commercial Jobs
     ###
     internalMarket = (@residents + @jobs.commercial + @jobs.industrial) / internalMarketDenom
     projectedCommercialJobs = Math.round(internalMarket * laborBase)
-    
+
     ###
     Calculate Projected Industrial Jobs
     ###
     projectedIndustrialJobs = Math.round(@jobs.industrial * laborBase * externalMarketMultiplier)
     projectedIndustrialJobs = Math.max(projectedIndustrialJobs, projectedIndJobsMin)
-    
+
     ###
     Set Demand Ratios of projected to actual
     ###
@@ -99,19 +99,19 @@ class Map
     residentialRatio = Math.min(residentialRatio, ratioMax)
     commercialRatio = Math.min(commercialRatio, ratioMax)
     industrialRatio = Math.min(industrialRatio, ratioMax)
-    
+
     # Change the velocity of demand as mediated by the RATIOEFFECT
     # Add 1 just so it never gets totally stuck with a zero multiplier
     @demand.residential += 1 + 30 * (residentialRatio - 1) / ratioEffect # half theeffect of the demand
     @demand.commercial += 1 + 50 * (commercialRatio - 1) / ratioEffect # half the effect of the demand
     @demand.industrial += 1 + 40 * (industrialRatio - 1) / ratioEffect # half the effect of the demand
-    @demand.residential = Math.max(-1 * MAXDEMAND, Math.min(MAXDEMAND, @demand.residential))
-    @demand.commercial = Math.max(-1 * MAXDEMAND, Math.min(MAXDEMAND, @demand.commercial))
-    @demand.industrial = Math.max(-1 * MAXDEMAND, Math.min(MAXDEMAND, @demand.industrial))
+    @demand.residential = Math.max(-1 * config['MAXDEMAND'], Math.min(config['MAXDEMAND'], @demand.residential))
+    @demand.commercial = Math.max(-1 * config['MAXDEMAND'], Math.min(config['MAXDEMAND'], @demand.commercial))
+    @demand.industrial = Math.max(-1 * config['MAXDEMAND'], Math.min(config['MAXDEMAND'], @demand.industrial))
     @demand.residential = Math.floor(@demand.residential)
     @demand.commercial = Math.floor(@demand.commercial)
     @demand.industrial = Math.floor(@demand.industrial)
-    
+
     # return some values for easy debugging/testing
     laborBase: laborBase
     jobsBase: jobsBase
@@ -176,7 +176,7 @@ class Map
 
   adjacentSquaresCount: (position, distance) ->
     count = {}
-    
+
     # get the adjacent squares and iterate
     adjacentSquares = @adjacentSquares(position, distance)
     i = 0
@@ -210,5 +210,9 @@ class Map
       pollution: square.pollution
 
     @emitter.emit "updateSquare", data
+
+  rezone: ([x, y], zone) ->
+    @squares[x][y].rezone zone
+
 
 module.exports = Map

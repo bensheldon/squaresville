@@ -12,9 +12,7 @@ io = require("socket.io").listen(server)
 port = process.env.PORT || 4000
 host = process.env.HOST || "localhost:4000"
 
-MAPSIZE = 16
-MAXDENSITY = 3
-LOOPTIME = 1000
+config = require("./lib/config")
 
 server.configure ->
   server.use express.methodOverride()
@@ -24,8 +22,6 @@ server.configure ->
     layout: false
   server.use express.static(__dirname + "/public")
 
-server.listen port
-
 # Use xhr-polling for Heroku... ugh
 io.configure ->
   io.set "transports", ["xhr-polling"]
@@ -34,11 +30,12 @@ io.configure ->
 io.sockets.on "connection", (socket) ->
   socket.emit "message", "test message"
   socket.on "rezone", (data) ->
-    map.squares[data.position[0]][data.position[1]].rezone data.zone
+    map.rezone(data.position, data.zone)
 
-
-Map = require("./models/map")
-map = new Map(MAPSIZE, io.sockets)
+GameLoop = require('./lib/game_loop')
+Map = require("./lib/models/map")
+map = new Map(config['MAPSIZE'], io.sockets)
+gameloop = new GameLoop(map)
 
 map.squares[7][3].zone = "residential"
 map.squares[8][3].zone = "road"
@@ -67,27 +64,5 @@ server.get "/", (req, res) ->
     port: port
     map: map
 
-###
-# Game Loop
-###
-loop_ = ->
-  console.log "Age: " + map.age
-  console.log "Population: " + map.residents
-  
-  # Update the map on every tick
-  map.updateUiMap()
-  cycle = map.age % 3
-  switch cycle
-    when 0
-      map.globalDemand()
-    when 1
-      map.scanMap (square) ->
-        square.doZone()
-    when 2
-      map.scanMap (square) ->
-        square.doTransit() if square.zone
-
-  map.age++
-  setTimeout loop_, LOOPTIME #restart
-
-loop_()
+server.listen port
+gameloop.start()
