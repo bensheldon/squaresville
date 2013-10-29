@@ -1,11 +1,18 @@
 {
   "name": "squaresville",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "scripts": {
+    "start": "coffee server.coffee",
+    "test": "mocha --compilers coffee:coffee-script"
+  },
   "dependencies": {
-  	"yamlish": ">= 0.0.2",
+    "coffee-script": "~> 1.6.3",
+    "yamlish": ">= 0.0.2",
     "express": ">= 2.4.3",
-  	"jade": ">= 0.0.1",
-  	"socket.io": ">= 0.0.1",
-	"underscore": ">= 0.0.1"
+    "jade": ">= 0.0.1",
+    "socket.io": ">= 0.0.1",
+    "underscore": ">= 0.0.1",
+    "mocha": "~1.13.0",
+    "chai": "~1.8.1"
   }
 }
