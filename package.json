@@ -1,15 +1,17 @@
 {
   "name": "squaresville",
   "version": "0.0.2",
+  "repository": "https://github.com/bensheldon/squaresville",
   "scripts": {
     "start": "coffee server.coffee",
-    "test": "mocha --compilers coffee:coffee-script"
+    "test": "mocha --require chai --reporter spec --compilers coffee:coffee-script --require test/test_helper.coffee --recursive"
   },
+  "engine": "node ~> 0.10.21",
   "dependencies": {
     "coffee-script": "~> 1.6.3",
     "yamlish": ">= 0.0.2",
     "express": ">= 2.4.3",
-    "jade": ">= 0.0.1",
+    "jade": "~> 0.20.3",
     "socket.io": ">= 0.0.1",
     "underscore": ">= 0.0.1",
     "mocha": "~1.13.0",

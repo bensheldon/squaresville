@@ -1,4 +1,4 @@
-var Square = require('../models/square');
+var Square = require('../../lib/models/square');
 
 exports.doResidential = {
   setUp: function (callback) {
@@ -9,7 +9,7 @@ exports.doResidential = {
         industrial:0
       },
 		  demand: {
-  			residential:  10, 
+  			residential:  10,
   			commercial:	  10,
   			industrial:   10
 		  }
@@ -80,7 +80,7 @@ exports.doResidential = {
 		test.equal(square.growthRate, -10)
 		test.done();
   },
-	
+
   "Should never have population less than 0": function (test) {
 		var square = this.square;
 		square.residents = 2;
@@ -90,7 +90,7 @@ exports.doResidential = {
 		test.ok(square.residents >= 0);
 		test.done();
   },
-	
+
   "Should never have population greater than 1000": function (test) {
 		var square = this.square;
 		square.residents = 999;
@@ -111,7 +111,7 @@ exports.doIndustrial = {
         industrial:0
       },
 		  demand: {
-  			residential:  10, 
+  			residential:  10,
   			commercial:	  10,
   			industrial:   10
 		  }
@@ -180,7 +180,7 @@ exports.doIndustrial = {
 		test.equal(square.growthRate, -10)
 		test.done();
   },
-	
+
   "Should never have jobs of less than 0": function (test) {
 		var square = this.square;
 		square.jobs = 2;
@@ -189,7 +189,7 @@ exports.doIndustrial = {
 		test.ok(square.jobs >= 0);
 		test.done();
   },
-	
+
   "Should never have jobs of greater than 1000": function (test) {
 		var square = this.square;
 		square.jobs = 999;

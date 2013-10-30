@@ -1,5 +1,5 @@
-var Travel = require('../models/travel');
-var Map = require('../models/map');
+var Travel = require('../../lib/models/travel');
+var Map = require('../../lib/models/map');
 
 exports.Travel = {
   setUp: function (callback) {
@@ -57,6 +57,6 @@ exports.Travel = {
     console.log(trip.route);
     test.done();
   },
-  
-  
+
+
 }
