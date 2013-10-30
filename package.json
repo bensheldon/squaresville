@@ -6,15 +6,17 @@
     "start": "coffee server.coffee",
     "test": "mocha --require chai --reporter spec --compilers coffee:coffee-script --require test/test_helper.coffee --recursive"
   },
-  "engine": "node ~> 0.10.21",
   "dependencies": {
-    "coffee-script": "~> 1.6.3",
-    "yamlish": ">= 0.0.2",
-    "express": ">= 2.4.3",
-    "jade": "~> 0.20.3",
-    "socket.io": ">= 0.0.1",
-    "underscore": ">= 0.0.1",
+    "coffee-script": "~1.6.3",
+    "yamlish": "~0.0.5",
+    "express": "~2.4.3",
+    "jade": "~0.20.3",
+    "socket.io": "~0.9.16",
+    "underscore": "~1.5.2",
     "mocha": "~1.13.0",
     "chai": "~1.8.1"
+  },
+  "engines": {
+    "node": "~0.10.21"
   }
 }
