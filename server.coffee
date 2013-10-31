@@ -9,9 +9,6 @@ express = require("express")
 server = express.createServer()
 io = require("socket.io").listen(server)
 
-port = process.env.PORT || 4000
-host = process.env.HOST || "localhost:4000"
-
 config = require("./lib/config")
 
 server.configure ->
@@ -56,13 +53,18 @@ map.squares[7][9].zone = "industrial"
 map.squares[8][9].zone = "road"
 map.squares[15][15].zone = "residential"
 
-# Routes
-server.get "/", (req, res) ->
-  res.render "index",
-    title: "My Site"
-    host: host
-    port: port
-    map: map
-
-server.listen port
 gameloop.start()
+
+exports.startServer = (port, path, callback) ->
+  port = port || 3000
+  host = process.env.HOST || "localhost:#{port}"
+
+  server.get "/", (req, res) ->
+    res.render "index",
+      title: "My Site"
+      host: host
+      port: port
+      map: map
+
+  server.listen port
+  console.log "Listening on port: #{port}"

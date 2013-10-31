@@ -7,7 +7,7 @@ table#map {
     background-color: lighten(brown, 20%);
     text-align: center;
     position: relative;
-    
+
     &:after {
       position: absolute;
       top: 0;
@@ -15,10 +15,10 @@ table#map {
       display: block;
       text-align: center;
     }
-    
+
     &[data-zone="residential"] {
       background-color: green;
-      
+
       &[data-density="0"] {
         background-color: lighten(green, 80%);
         border: 2px solid green;
@@ -34,7 +34,7 @@ table#map {
       &[data-density="3"] {
         background-color: darken(green, 12%);
       }
-      
+
     }
     &[data-zone="commercial"] {
       background-color: blue;
@@ -45,7 +45,7 @@ table#map {
     &[data-zone="road"] {
       background-color: gray;
     }
-    
+
 
   }
 }

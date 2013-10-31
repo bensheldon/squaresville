@@ -3,7 +3,8 @@
   "version": "0.0.2",
   "repository": "https://github.com/bensheldon/squaresville",
   "scripts": {
-    "start": "coffee server.coffee",
+    "postinstall": "./node_modules/.bin/brunch build --production",
+    "start": "brunch watch --server",
     "test": "mocha --require chai --reporter spec --compilers coffee:coffee-script --require test/test_helper.coffee --recursive"
   },
   "dependencies": {
@@ -14,7 +15,16 @@
     "socket.io": "~0.9.16",
     "underscore": "~1.5.2",
     "mocha": "~1.13.0",
-    "chai": "~1.8.1"
+    "chai": "~1.8.1",
+
+    "brunch": "~1.7.10",
+    "javascript-brunch": "~1.5",
+    "coffee-script-brunch": "~1.5",
+    "uglify-js-brunch": ">= 1.0 < 1.8",
+    "css-brunch": "1.5.x",
+    "stylus-brunch": "1.5.x",
+    "clean-css-brunch": ">= 1.0 < 1.8",
+    "jade-brunch": "> 1.0 < 1.5"
   },
   "engines": {
     "node": "~0.10.21"
